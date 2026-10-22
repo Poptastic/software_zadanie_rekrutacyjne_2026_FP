@@ -1,6 +1,7 @@
 import random
 import sys
 import time
+import json
 import os
 import yaml
 from enum import Enum
@@ -122,6 +123,21 @@ class StandaloneMock:
             self._logger.info(f"    - {relay_name}: {'OPEN' if state else 'CLOSED'}")
         self._logger.info(f"  Velocity: {self.velocity:.2f} m/s")
         self._logger.info("=" * 60)
+
+    def save_status(self):
+        status = {
+            "state": self.state.value,
+            "sensors": self.sensors,
+            "servos": self.servos,
+            "relays": self.relays,
+            "velocity": self.velocity,
+            "max_altidue": self.max_altitude
+        }
+        temp_file = "rocket_status.tmp"
+        with open(temp_file, 'w') as f:
+            json.dump(status, f)
+
+        os.replace(temp_file, "rocket_status.json")
 
     def explode(self, reason: str):
         self.state = SimulationState.EXPLOSION
@@ -534,6 +550,8 @@ class StandaloneMock:
                 dt = (current_time - self.last_physics_update) * self.time_multiplier
                 self.update_physics(dt)
                 self.last_physics_update = current_time
+
+                self.save_status()
             
             if not self.verbose and current_time > self.last_status_print + 1.0:
                 self.print_rocket_status()
