@@ -1,18 +1,18 @@
-from nicegui import ui
+from nicegui import ui, Client, app
 import sys
 import json
 import os
 import subprocess
-from pathlib import Path
-
-#sys.path.append(str(Path(__file__).resolve().parent.parent))
+import atexit
 
 
 sim_process = None
+proxy_process = None
 rocket_status_file = "rocket_status.json"
 error_messages = "error_messages.json"
 
 def apk_set_up():
+    global proxy_process
     ui.label('TEST')
 
     sim_info()
@@ -55,7 +55,6 @@ def sim_info():
         return
 
     ui.label(f"Rocket state: {status['state']}")
-
     ui.label("Sensors:")
     ui.label(f"-Fuel level: {status['sensors']['fuel_level']:.1f}%")
     ui.label(f"-Oxidizer level: {status['sensors']['oxidizer_level']:.1f}%")
@@ -74,7 +73,21 @@ def error_info():
     if len(messages) == 0:
         ui.label('NO ERRORS')
     else:
-        ui.label(messages[0])
+        for i in messages:
+            ui.label(i)
 
+@app.on_disconnect
+async def index(client: Client):
+    await client.disconnected()
+    app.shutdown()
+
+def clean_up():
+    proxy_process.terminate()
+    if sim_process != None:
+        sim_process.terminate()
+        os.remove("rocket_status.json")
+        os.remove("error_messages.json")
 
 apk_set_up()
+
+atexit.register(clean_up)
