@@ -6,40 +6,95 @@ import subprocess
 import atexit
 
 
+#rocket_state = None
+#fuel_level = None
+#oxidizer_level = None
+#oxidizer_pressure = None
+#altitude = None
+#angle = None
+ui.label('TEST')
+
+awaiting_sim_label = ui.label('Waiting for sim to start...')
+
 sim_process = None
 proxy_process = None
-rocket_status_file = "rocket_status.json"
-error_messages = "error_messages.json"
+rocket_status_file = "./rocket_status.json"
+error_messages = "./error_messages.json"
 
 def apk_set_up():
     global proxy_process
-    ui.label('TEST')
+    global labels_container
 
     sim_info()
-    error_info()
 
-    ui.button(
-        'stop sim', on_click=lambda: sim_start_stop_handler(0)
-        )
-    
-    ui.button(
-        'start sim', on_click=lambda: sim_start_stop_handler(1)
-        )
-    
-    ui.timer(0.001, sim_info.refresh)
-    ui.timer(0.001, error_info.refresh)
+    with ui.column().classes('items-center'):
+        labels_container = ui.column().classes('items-left')
 
-    ui.run()
+    with ui.row().classes('h-96'):
+        ui.button(
+            'stop sim', on_click=lambda: sim_start_stop_handler(0)
+            )
+    
+        ui.button(
+            'start sim', on_click=lambda: sim_start_stop_handler(1)
+            )
+    
+    ui.timer(0.1, sim_info.refresh)
+    ui.timer(0.1, error_info.refresh)
+
     proxy_process = subprocess.Popen([sys.executable, "./tcp_proxy.py"])
 
 def sim_start_stop_handler(state: int):
-    global sim_process
     global rocket_status_file
+    global sim_process
+    global rocket_state
+    global fuel_level
+    global oxidizer_level
+    global oxidizer_pressure
+    global altitude
+    global angle
+
     if state == 1 and sim_process == None:
+
+        labels_container.clear()
+        
+        awaiting_sim_label.set_text('')
+
         sim_process = subprocess.Popen([sys.executable, "./tcp_simulator.py"])
+
+        with labels_container:
+            with ui.row().classes('items-center'):
+                ui.label(f"Rocket state: ")
+                rocket_state = ui.label('')
+            ui.label("Sensors:")
+            with ui.row().classes('items-center'):
+                ui.label(f"-Fuel level: ")
+                fuel_level = ui.label('')
+                ui.label("%")
+            with ui.row().classes('items-center'):
+                ui.label(f"-Oxidizer level: ")
+                oxidizer_level = ui.label('')
+                ui.label("%")
+            with ui.row().classes('items-center'):
+                ui.label("-Oxidizer pressure: ")
+                oxidizer_pressure = ui.label('')
+                ui.label(' bar')
+            with ui.row().classes('items-center'):
+                ui.label(f"-Altitude: ")
+                altitude = ui.label('')
+                ui.label(" m")
+            with ui.row().classes('items-center'):
+                ui.label(f"-Angle: ")
+                angle = ui.label('')
+                ui.label("°")
+            ui.label('errors:')
+            error_info()
+    
     if state == 0:
         if sim_process == None:
             return
+        labels_container.clear()
+        awaiting_sim_label.set_text('Waiting for sim to start...')
         sim_process.terminate()
         sim_process = None
         os.remove("rocket_status.json")
@@ -47,20 +102,26 @@ def sim_start_stop_handler(state: int):
 
 @ui.refreshable
 def sim_info():
+    global rocket_status_file
+    global rocket_state
+    global fuel_level
+    global oxidizer_level
+    global oxidizer_pressure
+    global altitude
+    global angle
+
     try:
         with open(rocket_status_file, 'r') as f:
             status = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        ui.label('Awaiting data...')
         return
 
-    ui.label(f"Rocket state: {status['state']}")
-    ui.label("Sensors:")
-    ui.label(f"-Fuel level: {status['sensors']['fuel_level']:.1f}%")
-    ui.label(f"-Oxidizer level: {status['sensors']['oxidizer_level']:.1f}%")
-    ui.label(f"-Oxidizer pressure: {status['sensors']['oxidizer_pressure']:.1f} bar")
-    ui.label(f"-Altitude: {status['sensors']['altitude']:.1f} m")
-    ui.label(f"-Angle: {status['sensors']['angle']:.1f}°")
+    rocket_state.set_text(f"{status['state']}")
+    fuel_level.set_text(f"{status['sensors']['fuel_level']:.1f}")
+    oxidizer_level.set_text(f"{status['sensors']['oxidizer_level']:.1f}")
+    oxidizer_pressure.set_text(f"{status['sensors']['oxidizer_pressure']:.1f}")
+    altitude.set_text(f"{status['sensors']['altitude']:.1f}")
+    angle.set_text(f"{status['sensors']['angle']:.1f}")
 
 @ui.refreshable
 def error_info():
@@ -69,7 +130,6 @@ def error_info():
             messages = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return
-    ui.label('errors:')
     if len(messages) == 0:
         ui.label('NO ERRORS')
     else:
@@ -85,5 +145,6 @@ def clean_up():
 
 apk_set_up()
 
-
 atexit.register(clean_up)
+
+ui.run()
