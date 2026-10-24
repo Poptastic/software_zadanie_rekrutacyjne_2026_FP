@@ -76,11 +76,6 @@ def error_info():
         for i in messages:
             ui.label(i)
 
-@app.on_disconnect
-async def index(client: Client):
-    await client.disconnected()
-    app.shutdown()
-
 def clean_up():
     proxy_process.terminate()
     if sim_process != None:
@@ -89,5 +84,6 @@ def clean_up():
         os.remove("error_messages.json")
 
 apk_set_up()
+
 
 atexit.register(clean_up)
