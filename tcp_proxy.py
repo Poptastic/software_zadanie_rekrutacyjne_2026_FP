@@ -225,8 +225,11 @@ if __name__ == '__main__':
 
 
     async def run_proxy():
-        await asyncio.gather(software_proxy.serve(),
-                             hardware_proxy.serve())
+        try:
+            await asyncio.gather(software_proxy.serve(),
+                                hardware_proxy.serve())
+        except OSError:
+            return
 
 
     asyncio.run(run_proxy())

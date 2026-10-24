@@ -16,7 +16,7 @@ from communication_library.tcp_transport import TcpSettings
 from argparse import ArgumentParser
 
 import logging
-
+from logging.handlers import MemoryHandler
 
 class SimulationState(Enum):
     IDLE = "IDLE"
@@ -105,6 +105,11 @@ class StandaloneMock:
         console_handler.setFormatter(log_formatter)
         logger_main.addHandler(console_handler)
 
+        memory_handler = MemoryHandler(1024*100, logging.CRITICAL, console_handler)
+
+        logger_main.addHandler(memory_handler)
+        
+
     def print_rocket_status(self):
         self._logger.info("=" * 60)
         self._logger.info("ROCKET STATUS:")
@@ -125,6 +130,8 @@ class StandaloneMock:
         self._logger.info("=" * 60)
 
     def save_status(self):
+        #all components of rocket
+
         status = {
             "state": self.state.value,
             "sensors": self.sensors,
@@ -133,11 +140,23 @@ class StandaloneMock:
             "velocity": self.velocity,
             "max_altidue": self.max_altitude
         }
-        temp_file = "rocket_status.tmp"
-        with open(temp_file, 'w') as f:
+
+        jrfile = "rocket_status.json"
+        with open(jrfile, 'w') as f:
             json.dump(status, f)
 
-        os.replace(temp_file, "rocket_status.json")
+        #errors:
+        memory = next(
+            h for h in self._logger.handlers if isinstance(h, MemoryHandler)
+        )
+
+        errors = [
+            record.getMessage() for record in memory.buffer if record.levelno == logging.ERROR
+        ]
+
+        j_error_file = "error_messages.json"
+        with open(j_error_file, 'w') as g:
+            json.dump(errors, g)
 
     def explode(self, reason: str):
         self.state = SimulationState.EXPLOSION
