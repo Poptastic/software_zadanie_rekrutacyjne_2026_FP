@@ -22,7 +22,7 @@ def apk_set_up():
     sim_info()
 
     with ui.column().classes('items-center'):
-        labels_container = ui.column().classes('items-left')
+        labels_container = ui.column().classes('items-center')
 
     with ui.row().classes('h-96'):
         ui.button(
@@ -65,59 +65,82 @@ def sim_start_stop_handler(state: int):
         sim_process = subprocess.Popen([sys.executable, "./tcp_simulator.py"])
 
         with labels_container:
-            with ui.row().classes('items-center'):
-                ui.label(f"Rocket state: ")
-                rocket_state = ui.label('')
-            ui.label("Sensors:")
-            with ui.row().classes('items-center'):
-                ui.label(f"     -Fuel level: ")
-                fuel_level = ui.label('')
-                ui.label("%")
-            with ui.row().classes('items-center'):
-                ui.label(f"     -Oxidizer level: ")
-                oxidizer_level = ui.label('')
-                ui.label("%")
-            with ui.row().classes('items-center'):
-                ui.label("      -Oxidizer pressure: ")
-                oxidizer_pressure = ui.label('')
-                ui.label(' bar')
-            with ui.row().classes('items-center'):
-                ui.label(f"     -Altitude: ")
-                altitude = ui.label('')
-                ui.label(" m")
-            with ui.row().classes('items-center'):
-                ui.label(f"     -Angle: ")
-                angle = ui.label('')
-                ui.label("°")
-            ui.label('Servos:')
-            with ui.row().classes('items-center'):
-                ui.label("      -Fuel intake: ")
-                fuel_intake = ui.label('')
-            with ui.row().classes('items-center'):
-                ui.label("      -Oxidizer intake: ")
-                oxidizer_intake = ui.label('')
-            with ui.row().classes('items-center'):
-                ui.label("      -Fuel main: ")
-                fuel_main = ui.label('')
-            with ui.row().classes('items-center'):
-                ui.label("      -Oxidizer main: ")
-                oxidizer_main = ui.label('')
-            ui.label('Relays:')
-            with ui.row().classes('items-center'):
-                ui.label("      -Oxidizer heater: ")
-                oxidizer_heater = ui.label('')
-            with ui.row().classes('items-center'):
-                ui.label("      -Igniter: ")
-                igniter = ui.label('')
-            with ui.row().classes('items-center'):
-                ui.label("      -Parachute: ")
-                parachute = ui.label('')
-            with ui.row().classes('items-center'):
-                ui.label("Velocity: ")
-                velocity = ui.label('')
-                ui.label("m/s")
-            ui.label('Errors:')
-            error_info()
+            with ui.row().classes('w-full items-start gap-8 flex nowrap'):
+
+                # LEFT COLUMN: Rocket telemetry
+                with ui.card().classes('shrink-0'):
+                    ui.label("Rocket state:").classes('font-bold')
+                    rocket_state = ui.label('')
+
+                with ui.card().classes('shrink-0'):
+                    ui.label("Sensors:").classes('font-bold')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Fuel level:")
+                        fuel_level = ui.label('')
+                        ui.label("%")
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Oxidizer level:")
+                        oxidizer_level = ui.label('')
+                        ui.label("%")
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Oxidizer pressure:")
+                        oxidizer_pressure = ui.label('')
+                        ui.label("bar")
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Altitude:")
+                        altitude = ui.label('')
+                        ui.label("m")
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Angle:")
+                        angle = ui.label('')
+                        ui.label("°")
+                with ui.card().classes('shrink-0'):
+                    ui.label("Servos:").classes('font-bold')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Fuel intake:")
+                        fuel_intake = ui.label('')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Oxidizer intake:")
+                        oxidizer_intake = ui.label('')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Fuel main:")
+                        fuel_main = ui.label('')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Oxidizer main:")
+                        oxidizer_main = ui.label('')
+                with ui.card().classes('shrink-0'):
+                    ui.label("Relays:").classes('font-bold')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Oxidizer heater:")
+                        oxidizer_heater = ui.label('')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Igniter:")
+                        igniter = ui.label('')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("- Parachute:")
+                        parachute = ui.label('')
+
+                    with ui.row().classes('items-center'):
+                        ui.label("Velocity:")
+                        velocity = ui.label('')
+                        ui.label("m/s")
+
+                # RIGHT COLUMN: Errors
+                with ui.card().classes('flex-1 min-w-0'):
+                    ui.label("Errors:").classes('text-xl font-bold')
+                    error_info()
     
     if state == 0:
         if sim_process == None:
@@ -132,6 +155,7 @@ def sim_start_stop_handler(state: int):
 @ui.refreshable
 def sim_info():
     global rocket_status_file
+    global status
     #global rocket_state
     #global fuel_level
     #global oxidizer_level
@@ -141,7 +165,7 @@ def sim_info():
 
     try:
         with open(rocket_status_file, 'r') as f:
-            status = json.load(f)
+            status = json.loads(f.readline())
     except (FileNotFoundError, json.JSONDecodeError):
         return
 
