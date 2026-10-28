@@ -27,4 +27,4 @@ Kiedy symulator jest wyłączony pliki te zostają usunięte.
 ### Działanie skryptu startup_protocol
 
 Skrypt wysyła polecenia (tak jak zostało to przedstawione w skrypcie ```frame_sending_receiving_example.py```), które są oddzielone odpowiednimi interwałami czasowymi. 
-Głównym narzędziem jest funkcja ```conditioner()```, która pozwala na określenie czy konkretna bramka logiczna została spełniona, jeżeli tak to przechodzi do następnego kroku.
+Głównym narzędziem jest funkcja ```conditioner()```, która pozwala na określenie czy konkrety threshold został spełniony, jeżeli tak to przechodzi do następnego kroku.
