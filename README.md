@@ -6,7 +6,7 @@ Dodatkowo przygotowałem skrypt automatyzujący start oraz lądowanie rakiety.
 ## Dokumentacja
 ### Setup
 Aplikacja została stworzona przy pomocy nicegui. Znajduje się ona w folderze ```aplication```.
-W tym folderze znajduje się również skrypt ```startup_protocol.py``` odpowiadający za automatyzacje startu i lądowania rakiety.
+W tym folderze znajduje się również skrypt ```startup_protocol.py``` odpowiadający za automatyzacje startu i lądowanie rakiety.
 Aby uruchomić aplikację należy wpisać: 
 ```bash
 python aplication/apk.py
@@ -20,7 +20,7 @@ Kiedy symulator jest włączony można uruchomić skrypt ```startup_protocol.py`
 ### Działanie aplikacji
 
 W skrypcie ```tcp_simulator``` została dodana funkcja ```save_status```, która zapisuje wszystkie dane do pilku ```rocket_status.json```.
-Na tej samej zasadzie działaja wyświetlanie errorów, które zapisywane są w pliku ```error_messages.json```.
+Na tej samej zasadzie działa wyświetlanie errorów, które zapisywane są w pliku ```error_messages.json```.
 Kiedy symulator jest wyłączony pliki te zostają usunięte.
 
 ### Działanie skryptu startup_protocol
