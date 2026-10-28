@@ -5,10 +5,11 @@ import os
 import subprocess
 import atexit
 
+ui.colors(brand="#C9C8C8")
 
-ui.label('TEST')
+ui.label('ROCKET SIM').classes('font-bold text-brand')
 
-awaiting_sim_label = ui.label('Waiting for sim to start...')
+awaiting_sim_label = ui.label('Waiting for sim to start...').classes('text-brand')
 
 sim_process = None
 proxy_process = None
@@ -18,6 +19,9 @@ error_messages = "./error_messages.json"
 def apk_set_up():
     global proxy_process
     global labels_container
+
+    ui.query('body').style('background-color: #333230')
+    ui.colors(primary='#555')
 
     sim_info()
 
