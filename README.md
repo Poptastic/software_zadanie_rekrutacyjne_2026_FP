@@ -15,7 +15,8 @@ python aplication/apk.py
 Aplikacja automatycznie uruchamia skrypt ```tcp_proxy.py```. Aby uruchomić symulator należy wcisnąć przycisk ```start sim```.
 Analogicznie przycisk ```stop sim``` zamyka symulator.
 
-Kiedy symulator jest włączony można uruchomić skrypt ```startup_protocol.py```, aby zinicjalizować start oraz kolejne akcje.
+Kiedy symulator jest włączony można uruchomić skrypt ```startup_protocol.py```, aby zinicjalizować start oraz kolejne akcje. 
+Przycisk ```initialize start``` uruchamia ten skrypt (przycisk wyświetli się po uruchomieniu symulatora).
 
 ### Działanie aplikacji
 

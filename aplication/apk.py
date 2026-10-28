@@ -21,6 +21,7 @@ error_messages = "./error_messages.json"
 def apk_set_up():
     global proxy_process
     global labels_container
+    global initialize_start_button
 
     sim_info()
 
@@ -35,7 +36,12 @@ def apk_set_up():
         ui.button(
             'start sim', on_click=lambda: sim_start_stop_handler(1)
             )
-    
+        
+        initialize_start_button = ui.button(
+                    'initialize start', on_click= lambda: subprocess.Popen([sys.executable, "aplication/startup_protocol.py"])
+            )
+        initialize_start_button.visible = False
+        
     ui.timer(0.1, sim_info.refresh)
     ui.timer(0.1, error_info.refresh)
 
@@ -61,6 +67,7 @@ def sim_start_stop_handler(state: int):
     if state == 1 and sim_process == None:
 
         labels_container.clear()
+        initialize_start_button.visible = True
         
         awaiting_sim_label.set_text('')
 
@@ -144,6 +151,7 @@ def sim_start_stop_handler(state: int):
     if state == 0:
         if sim_process == None:
             return
+        initialize_start_button.visible = False
         labels_container.clear()
         awaiting_sim_label.set_text('Waiting for sim to start...')
         sim_process.terminate()
