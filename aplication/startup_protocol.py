@@ -31,15 +31,6 @@ if __name__ == "__main__":
     cm = CommunicationManager()
     cm.change_transport_type(TransportType.TCP)
 
-    altitude_frame = Frame(ids.BoardID.SOFTWARE, 
-                            ids.PriorityID.LOW, 
-                            ids.ActionID.FEED, 
-                            ids.BoardID.ROCKET, 
-                            ids.DeviceID.SENSOR, 
-                            2, # altitude sensor
-                            ids.DataTypeID.FLOAT,
-                            ids.OperationID.SENSOR.value.READ)
-    cm.register_callback(on_altitude, altitude_frame)
     cm.connect(TcpSettings("127.0.0.1", 3000))
 
     oxidizer_intake_open_frame = Frame(ids.BoardID.ROCKET, 

@@ -1,4 +1,4 @@
-from nicegui import ui, Client, app
+from nicegui import ui
 import sys
 import json
 import os
@@ -10,6 +10,8 @@ ui.colors(brand="#C9C8C8")
 ui.label('ROCKET SIM').classes('font-bold text-brand')
 
 awaiting_sim_label = ui.label('Waiting for sim to start...').classes('text-brand')
+ui.query('body').style('background-color: #333230')
+ui.colors(primary='#555')
 
 sim_process = None
 proxy_process = None
@@ -19,9 +21,6 @@ error_messages = "./error_messages.json"
 def apk_set_up():
     global proxy_process
     global labels_container
-
-    ui.query('body').style('background-color: #333230')
-    ui.colors(primary='#555')
 
     sim_info()
 
@@ -43,7 +42,6 @@ def apk_set_up():
     proxy_process = subprocess.Popen([sys.executable, "./tcp_proxy.py"])
 
 def sim_start_stop_handler(state: int):
-    global rocket_status_file
     global sim_process
     global rocket_state
     global fuel_level
@@ -70,8 +68,6 @@ def sim_start_stop_handler(state: int):
 
         with labels_container:
             with ui.row().classes('w-full items-start gap-8 flex nowrap'):
-
-                # LEFT COLUMN: Rocket telemetry
                 with ui.card().classes('shrink-0'):
                     ui.label("Rocket state:").classes('font-bold')
                     rocket_state = ui.label('')
@@ -141,7 +137,6 @@ def sim_start_stop_handler(state: int):
                         velocity = ui.label('')
                         ui.label("m/s")
 
-                # RIGHT COLUMN: Errors
                 with ui.card().classes('flex-1 min-w-0'):
                     ui.label("Errors:").classes('text-xl font-bold')
                     error_info()
@@ -160,12 +155,6 @@ def sim_start_stop_handler(state: int):
 def sim_info():
     global rocket_status_file
     global status
-    #global rocket_state
-    #global fuel_level
-    #global oxidizer_level
-    #global oxidizer_pressure
-    #global altitude
-    #global angle
 
     try:
         with open(rocket_status_file, 'r') as f:
