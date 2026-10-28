@@ -19,7 +19,7 @@ Kiedy symulator jest włączony można uruchomić skrypt ```startup_protocol.py`
 
 ### Działanie aplikacji
 
-W skrypcie ```tcp_simulator``` została dodana funkcja ```save_status```, która zapisuje wszystkie dane do pilku ```rocket_status.json```.
+W skrypcie ```tcp_simulator``` została dodana funkcja ```save_status()```, która zapisuje wszystkie dane do pilku ```rocket_status.json```.
 Na tej samej zasadzie działa wyświetlanie errorów, które zapisywane są w pliku ```error_messages.json```.
 Kiedy symulator jest wyłączony pliki te zostają usunięte.
 
