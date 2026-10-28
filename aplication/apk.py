@@ -15,6 +15,7 @@ ui.colors(primary='#555')
 
 sim_process = None
 proxy_process = None
+start_up_process = None
 rocket_status_file = "./rocket_status.json"
 error_messages = "./error_messages.json"
 
@@ -38,7 +39,7 @@ def apk_set_up():
             )
         
         initialize_start_button = ui.button(
-                    'initialize start', on_click= lambda: subprocess.Popen([sys.executable, "aplication/startup_protocol.py"])
+                    'initialize start', on_click= lambda: init_start()
             )
         initialize_start_button.visible = False
         
@@ -46,6 +47,10 @@ def apk_set_up():
     ui.timer(0.1, error_info.refresh)
 
     proxy_process = subprocess.Popen([sys.executable, "./tcp_proxy.py"])
+
+def init_start():
+    start_up_process = subprocess.Popen([sys.executable, "aplication/startup_protocol.py"])
+    initialize_start_button.disable()
 
 def sim_start_stop_handler(state: int):
     global sim_process
@@ -152,6 +157,9 @@ def sim_start_stop_handler(state: int):
         if sim_process == None:
             return
         initialize_start_button.visible = False
+        initialize_start_button.enable()
+        if start_up_process != None:
+            start_up_process.terminate()
         labels_container.clear()
         awaiting_sim_label.set_text('Waiting for sim to start...')
         sim_process.terminate()
